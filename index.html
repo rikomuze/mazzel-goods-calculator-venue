@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAZZEL グッズ費用計算 会場版</title>
+  <style>
+    :root{
+      --bg1:#120f1d;
+      --bg2:#24173c;
+      --card:#ffffff;
+      --text:#1f1730;
+      --muted:#6a617a;
+      --line:#e9e2f5;
+      --accent:#7c5cff;
+      --accent2:#b499ff;
+      --accent3:#f4f0ff;
+      --danger:#ff5a78;
+      --shadow:0 18px 40px rgba(18,15,29,.18);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(180,153,255,.35), transparent 30%),
+        radial-gradient(circle at top right, rgba(124,92,255,.28), transparent 22%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      min-height:100vh;
+    }
+    .wrap{
+      width:min(1120px, calc(100vw - 24px));
+      margin:0 auto;
+      padding:24px 0 40px;
+    }
+    .hero{
+      color:#fff;
+      padding:24px 8px 10px;
+    }
+    .hero h1{
+      margin:0 0 10px;
+      font-size:clamp(28px, 5vw, 42px);
+      letter-spacing:.02em;
+    }
+    .hero p{
+      margin:0;
+      color:rgba(255,255,255,.88);
+      line-height:1.8;
+    }
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+    .chip{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.5fr .82fr;
+      gap:18px;
+      align-items:start;
+      margin-top:18px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .section{
+      padding:22px;
+      border-top:1px solid var(--line);
+    }
+    .section:first-child{border-top:none}
+    .section h2{
+      margin:0 0 8px;
+      font-size:20px;
+    }
+    .section p.note{
+      margin:0;
+      color:var(--muted);
+      line-height:1.7;
+      font-size:14px;
+    }
+    .rules{
+      padding-left:18px;
+      margin:10px 0 0;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:14px;
+    }
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:14px;
+    }
+    .btn{
+      border:none;
+      background:var(--accent);
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .btn.secondary{
+      background:var(--accent3);
+      color:var(--accent);
+    }
+    .btn.ghost{
+      background:#fff;
+      color:var(--danger);
+      border:1px solid #ffd4dc;
+    }
+    .list{
+      display:grid;
+      gap:12px;
+    }
+    .item{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      background:#fff;
+    }
+    .item-head{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .item-title{
+      margin:0;
+      font-size:16px;
+      line-height:1.5;
+    }
+    .meta{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      margin-top:4px;
+    }
+    .price{
+      white-space:nowrap;
+      color:var(--accent);
+      font-weight:800;
+      font-size:18px;
+    }
+    .controls{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+    }
+    .qty-btn{
+      width:38px;
+      height:38px;
+      border:none;
+      border-radius:12px;
+      background:var(--accent3);
+      color:var(--accent);
+      font-size:24px;
+      line-height:1;
+      cursor:pointer;
+    }
+    .qty{
+      min-width:38px;
+      text-align:center;
+      font-weight:800;
+      font-size:18px;
+    }
+    .member-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .member-row{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+      background:#fcfbff;
+    }
+    .member-row .name{
+      font-weight:700;
+      font-size:14px;
+    }
+    .member-controls{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .member-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      margin-top:10px;
+    }
+    .tiny-btn{
+      border:none;
+      background:var(--accent3);
+      color:var(--accent);
+      padding:9px 12px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .summary{
+      position:sticky;
+      top:16px;
+    }
+    .summary-box{
+      padding:22px;
+    }
+    .sum-label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:6px;
+    }
+    .sum-value{
+      font-size:34px;
+      font-weight:900;
+      margin-bottom:14px;
+      letter-spacing:.02em;
+    }
+    .divider{
+      height:1px;background:var(--line);margin:18px 0;
+    }
+    .breakdown{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .breakdown-row{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:10px;
+      align-items:start;
+      font-size:14px;
+      padding:10px 0;
+      border-bottom:1px dashed var(--line);
+    }
+    .breakdown-row:last-child{border-bottom:none}
+    .breakdown-name{line-height:1.5}
+    .breakdown-qty,.breakdown-price{
+      white-space:nowrap;
+      font-variant-numeric:tabular-nums;
+    }
+    .empty{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.7;
+    }
+    .footer-note{
+      padding:0 8px;
+      margin-top:16px;
+      color:rgba(255,255,255,.78);
+      font-size:13px;
+      line-height:1.8;
+    }
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .summary{position:static}
+    }
+    @media (max-width:640px){
+      .wrap{width:min(100vw - 16px, 1120px)}
+      .section,.summary-box{padding:18px}
+      .item{padding:14px}
+      .item-head{flex-direction:column}
+      .controls{justify-content:flex-start}
+      .member-grid{grid-template-columns:1fr}
+      .sum-value{font-size:30px}
+      .breakdown-row{grid-template-columns:1fr auto}
+      .breakdown-price{grid-column:2}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>MAZZEL グッズ費用計算 会場版</h1>
+      <p>購入予定を入れると、合計金額・合計点数・内訳を自動で計算できます。</p>
+      <div class="chips">
+        <span class="chip">会場先行のライトバンドを追加</span>
+        <span class="chip">会場限定チャームを追加</span>
+        <span class="chip">まぜたくコースターは削除済み</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <main class="card">
+        <section class="section">
+          <h2>購入ルール</h2>
+          <p class="note">公式案内ベースの会場版です。数量上限がある商品はその範囲内で選べるようにしています。</p>
+          <ul class="rules">
+            <li>通常グッズは 1商品あたり1人3点まで</li>
+            <li>ランダムフォトカード・ステッカーセット / ランダムアートチャーム は10点まで</li>
+            <li>Fight Mirror は5点まで</li>
+            <li>メンバー別商品はメンバーごとに3点まで</li>
+            <li>マルチストラップは各メンバーごとに3点まで（全9種）</li>
+            <li>アクリルスタンドは各メンバーごとに3点まで（全8種）</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <h2>商品一覧</h2>
+          <div id="itemList" class="list"></div>
+        </section>
+      </main>
+
+      <aside class="summary">
+        <div class="card">
+          <div class="summary-box">
+            <div class="sum-label">合計金額</div>
+            <div id="totalPrice" class="sum-value">¥0</div>
+
+            <div class="sum-label">合計点数</div>
+            <div id="totalCount" class="sum-value" style="font-size:28px;">0点</div>
+
+            <div class="toolbar">
+              <button id="copyBtn" class="btn">結果をコピー</button>
+              <button id="resetBtn" class="btn ghost">リセット</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="sum-label">内訳</div>
+            <div id="breakdown" class="breakdown"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <p class="footer-note">
+      ※ 会場限定の「フルコーススタンドチャーム」は各会場ごとに絵柄が異なる想定のため、ここでは1商品として計算しています。<br>
+      ※ 「まぜたくコースター」は本公演では販売なしのため、会場版から外しています。
+    </p>
+  </div>
+
+  <script>
+    const strapMembers = ['KAIRYU','NAOYA','RAN','SEITO','RYUKI','TAKUTO','HAYATO','EIKI','MAZZEL'];
+    const standMembers = ['KAIRYU','NAOYA','RAN','SEITO','RYUKI','TAKUTO','HAYATO','EIKI'];
+
+    const items = [
+      { id:'light-band', name:'MAZZEL OFFICIAL LIGHT BAND S+', price:5500, max:3, note:'会場先行販売' },
+      { id:'light-custom-band', name:'MAZZEL OFFICIAL LIGHT CUSTOM BAND (PU)', price:2000, max:3 },
+      { id:'venue-charm', name:'[Shall we hit the Banquet?] フルコーススタンドチャーム', price:1300, max:3, note:'各会場限定販売' },
+      { id:'towel', name:'[Shall we hit the Banquet?] タオル', price:2500, max:3 },
+      { id:'rubber-band', name:'[Shall we hit the Banquet?] ラバーバンド', price:1000, max:3 },
+      { id:'big-tote', name:'[Shall we hit the Banquet?] BIGトートバッグ', price:5800, max:3 },
+      { id:'tee-black', name:'[Shall we hit the Banquet?] Tシャツ BLACK', price:5000, max:3 },
+      { id:'tee-white', name:'[Shall we hit the Banquet?] Tシャツ WHITE', price:5000, max:3, note:'FC会員限定カラー' },
+      { id:'acsta-trolley', name:'[Shall we hit the Banquet?] アクスタトロッコ', price:3600, max:3 },
+      { id:'clear-custom-seal', name:'[Shall we hit the Banquet?] クリアカスタムシール', price:600, max:3 },
+      { id:'random-photo', name:'[Shall we hit the Banquet?] ランダムフォトカード・ステッカーセット', price:500, max:10, note:'10点まで' },
+      { id:'photocard-case', name:'[Shall we hit the Banquet?] フォトカードケース', price:2000, max:3 },
+      { id:'random-art-charm', name:'[BANQUET BANG] ランダムアートチャーム', price:700, max:10, note:'10点まで' },
+      { id:'soccer-shirt', name:'Produced by KAIRYU [Shall we hit the Banquet?] MAZZELサッカーシャツ', price:5200, max:3 },
+      { id:'shushu', name:'Produced by NAOYA [Shall we hit the Banquet?] くちびるとシュシュ', price:2500, max:3 },
+      { id:'candle', name:'Produced by RAN [Shall we hit the Banquet?] ふつうのきゃんどる', price:5000, max:3 },
+      { id:'nabe-hand', name:'Produced by SEITO [Shall we hit the Banquet?] ごっついなべハンド', price:3500, max:3 },
+      { id:'fight-mirror', name:'Produced by RYUKI [Shall we hit the Banquet?] Fight Mirror', price:1500, max:5, note:'5点まで' },
+      { id:'tomcorn', name:'Produced by HAYATO [Shall we hit the Banquet?] TOMCORNぬいぐるみチャーム', price:2500, max:3 },
+      { id:'einyanko', name:'Produced by EIKI [Shall we hit the Banquet?] えいにゃんこチャーム', price:2500, max:3 },
+      { id:'multi-strap', name:'[Shall we hit the Banquet?] マルチストラップ', price:2500, type:'members', members:strapMembers, maxPerMember:3 },
+      { id:'acrylic-stand', name:'[BANQUET BANG] アクリルスタンド', price:1300, type:'members', members:standMembers, maxPerMember:3 },
+      { id:'big-acrylic-stand', name:'[BANQUET BANG] でっかアクリルスタンド MAZZEL', price:4000, max:3 }
+    ];
+
+    const state = {};
+
+    function yen(value){
+      return '¥' + value.toLocaleString('ja-JP');
+    }
+
+    function createSimpleItem(item){
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = `
+        <div class="item-head">
+          <div>
+            <h3 class="item-title">${item.name}</h3>
+            <div class="meta">${item.note ? item.note + ' / ' : ''}上限 ${item.max}点</div>
+          </div>
+          <div class="price">${yen(item.price)}</div>
+        </div>
+        <div class="controls">
+          <button class="qty-btn" data-action="minus">−</button>
+          <div class="qty" id="qty-${item.id}">0</div>
+          <button class="qty-btn" data-action="plus">＋</button>
+        </div>
+      `;
+      let qty = 0;
+      const qtyEl = el.querySelector(`#qty-${item.id}`);
+      el.querySelector('[data-action="minus"]').addEventListener('click', () => {
+        qty = Math.max(0, qty - 1);
+        state[item.id] = qty;
+        qtyEl.textContent = qty;
+        updateSummary();
+      });
+      el.querySelector('[data-action="plus"]').addEventListener('click', () => {
+        qty = Math.min(item.max, qty + 1);
+        state[item.id] = qty;
+        qtyEl.textContent = qty;
+        updateSummary();
+      });
+      return el;
+    }
+
+    function createMemberItem(item){
+      const el = document.createElement('div');
+      el.className = 'item';
+      const memberRows = item.members.map(member => `
+        <div class="member-row">
+          <div class="name">${member}</div>
+          <div class="member-controls">
+            <button class="qty-btn" data-member="${member}" data-action="minus">−</button>
+            <div class="qty" id="qty-${item.id}-${member}">0</div>
+            <button class="qty-btn" data-member="${member}" data-action="plus">＋</button>
+          </div>
+        </div>
+      `).join('');
+
+      el.innerHTML = `
+        <div class="item-head">
+          <div>
+            <h3 class="item-title">${item.name}</h3>
+            <div class="meta">メンバーごとに上限 ${item.maxPerMember}点</div>
+          </div>
+          <div class="price">${yen(item.price)}</div>
+        </div>
+        <div class="member-toolbar">
+          <button class="tiny-btn" id="fill-${item.id}">全種ほしい</button>
+        </div>
+        <div class="member-grid">${memberRows}</div>
+      `;
+
+      state[item.id] = {};
+      item.members.forEach(member => {
+        state[item.id][member] = 0;
+      });
+
+      el.querySelectorAll('[data-member]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const member = btn.dataset.member;
+          const action = btn.dataset.action;
+          const current = state[item.id][member];
+          state[item.id][member] = action === 'plus'
+            ? Math.min(item.maxPerMember, current + 1)
+            : Math.max(0, current - 1);
+          el.querySelector(`#qty-${item.id}-${member}`).textContent = state[item.id][member];
+          updateSummary();
+        });
+      });
+
+      el.querySelector(`#fill-${item.id}`).addEventListener('click', () => {
+        item.members.forEach(member => {
+          state[item.id][member] = 1;
+          el.querySelector(`#qty-${item.id}-${member}`).textContent = '1';
+        });
+        updateSummary();
+      });
+
+      return el;
+    }
+
+    function render(){
+      const list = document.getElementById('itemList');
+      items.forEach(item => {
+        if (item.type === 'members') {
+          list.appendChild(createMemberItem(item));
+        } else {
+          state[item.id] = 0;
+          list.appendChild(createSimpleItem(item));
+        }
+      });
+      updateSummary();
+    }
+
+    function getBreakdownEntries(){
+      const rows = [];
+      items.forEach(item => {
+        if (item.type === 'members') {
+          item.members.forEach(member => {
+            const qty = state[item.id][member];
+            if (qty > 0) {
+              rows.push({
+                name:`${item.name} / ${member}`,
+                qty,
+                subtotal:item.price * qty
+              });
+            }
+          });
+        } else {
+          const qty = state[item.id];
+          if (qty > 0) {
+            rows.push({
+              name:item.name,
+              qty,
+              subtotal:item.price * qty
+            });
+          }
+        }
+      });
+      return rows;
+    }
+
+    function updateSummary(){
+      const rows = getBreakdownEntries();
+      const totalQty = rows.reduce((sum, row) => sum + row.qty, 0);
+      const totalPrice = rows.reduce((sum, row) => sum + row.subtotal, 0);
+
+      document.getElementById('totalPrice').textContent = yen(totalPrice);
+      document.getElementById('totalCount').textContent = `${totalQty}点`;
+
+      const breakdown = document.getElementById('breakdown');
+      breakdown.innerHTML = '';
+
+      if (!rows.length) {
+        breakdown.innerHTML = `<div class="empty">まだ選択が入っていません。購入予定を入れると、ここに内訳が出ます。</div>`;
+        return;
+      }
+
+      rows.forEach(row => {
+        const div = document.createElement('div');
+        div.className = 'breakdown-row';
+        div.innerHTML = `
+          <div class="breakdown-name">${row.name}</div>
+          <div class="breakdown-qty">×${row.qty}</div>
+          <div class="breakdown-price">${yen(row.subtotal)}</div>
+        `;
+        breakdown.appendChild(div);
+      });
+    }
+
+    function buildCopyText(){
+      const rows = getBreakdownEntries();
+      const totalQty = rows.reduce((sum, row) => sum + row.qty, 0);
+      const totalPrice = rows.reduce((sum, row) => sum + row.subtotal, 0);
+
+      let text = `MAZZEL グッズ費用計算 会場版\n`;
+      text += `合計金額：${yen(totalPrice)}\n`;
+      text += `合計点数：${totalQty}点\n\n`;
+      text += `内訳\n`;
+      if (!rows.length) {
+        text += `・未入力\n`;
+      } else {
+        rows.forEach(row => {
+          text += `・${row.name} ×${row.qty} = ${yen(row.subtotal)}\n`;
+        });
+      }
+      return text;
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const text = buildCopyText();
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('結果をコピーしました。');
+      } catch (e) {
+        prompt('コピーできなかったので、こちらをコピーしてください。', text);
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('入力をすべてリセットしますか？')) return;
+      location.reload();
+    });
+
+    render();
+  </script>
+</body>
+</html>
