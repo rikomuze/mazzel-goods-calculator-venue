@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MAZZEL グッズ費用計算 会場版</title>
   <style>
@@ -348,8 +349,9 @@
             <div id="totalCount" class="sum-value" style="font-size:28px;">0点</div>
 
             <div class="toolbar">
-              <button id="copyBtn" class="btn">結果をコピー</button>
-              <button id="resetBtn" class="btn ghost">リセット</button>
+          <button id="copyBtn" class="btn">結果をコピー</button>
+<button id="imageBtn" class="btn secondary">画像で保存</button>
+<button id="resetBtn" class="btn ghost">リセット</button>
             </div>
 
             <div class="divider"></div>
@@ -622,7 +624,19 @@ el.querySelectorAll('[data-member]').forEach(btn => {
         prompt('コピーできなかったので、こちらをコピーしてください。', text);
       }
     });
+document.getElementById('imageBtn').addEventListener('click', async () => {
+  const target = document.querySelector('.summary .card');
 
+  const canvas = await html2canvas(target, {
+    backgroundColor: '#ffffff',
+    scale: 2
+  });
+
+  const link = document.createElement('a');
+  link.download = 'mazzel-goods-result.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
     document.getElementById('resetBtn').addEventListener('click', () => {
       if (!confirm('入力をすべてリセットしますか？')) return;
       location.reload();
