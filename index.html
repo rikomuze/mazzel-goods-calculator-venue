@@ -142,11 +142,7 @@ align-items:start;
   height:96px;
   max-width:96px;
   min-width:96px;
-  object-fit:cover;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:#f7f3ff;
-}
+ 
   object-fit:cover;
   border-radius:14px;
   border:1px solid var(--line);
@@ -231,7 +227,7 @@ align-items:start;
   border-radius:14px;
   padding:10px 12px;
   display:grid;
-  grid-template-columns:1fr auto;
+ grid-template-columns:minmax(72px, 1fr) auto;
   gap:10px;
   align-items:center;
   background:#fcfbff;
@@ -322,7 +318,32 @@ align-items:start;
       .item{padding:14px}
       .item-head{flex-direction:column}
       .controls{justify-content:flex-start}
-      .member-grid{grid-template-columns:1fr}
+      .member-grid{
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+
+.member-row{
+  grid-template-columns:1fr;
+  gap:8px;
+  padding:10px;
+}
+
+.member-controls{
+  justify-content:flex-start;
+}
+
+.qty-btn{
+  width:34px;
+  height:34px;
+  font-size:20px;
+}
+
+.qty-input{
+  width:54px;
+  height:34px;
+  font-size:16px;
+}
       .sum-value{font-size:30px}
       .breakdown-row{grid-template-columns:1fr auto}
       .breakdown-price{grid-column:2}
