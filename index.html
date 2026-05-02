@@ -421,56 +421,60 @@ align-items:start;
       return '¥' + value.toLocaleString('ja-JP');
     }
 
-    function createSimpleItem(item){
-      const el = document.createElement('div');
-      el.className = 'item';
-      el.innerHTML = `
-        <div class="item-head">
-       <img class="item-image" src="images/${item.id}.webp" onerror="this.onerror=null; this.src='images/${item.id}.png';" alt="${item.name}">
-          <div>
-            <h3 class="item-title">${item.name}</h3>
-            <div class="meta">${item.note ? item.note + ' / ' : ''}上限 ${item.max}点</div>
-          </div>
-          <div class="price">${yen(item.price)}</div>
+function createSimpleItem(item){
+  const el = document.createElement('div');
+  el.className = 'item';
+  el.innerHTML = `
+    <img class="item-image" src="images/${item.id}.webp" onerror="this.onerror=null; this.src='images/${item.id}.png';" alt="${item.name}">
+    <div>
+      <div class="item-head">
+        <div>
+          <h3 class="item-title">${item.name}</h3>
+          <div class="meta">${item.note ? item.note + ' / ' : ''}上限 ${item.max}点</div>
         </div>
+        <div class="price">${yen(item.price)}</div>
+      </div>
       <div class="controls">
-  <button class="qty-btn" data-action="minus">−</button>
-  <input class="qty-input" id="qty-${item.id}" type="number" min="0" max="${item.max}" value="0" inputmode="numeric">
-  <button class="qty-btn" data-action="plus">＋</button>
-</div>
-      `;
-    let qty = 0;
-const qtyEl = el.querySelector(`#qty-${item.id}`);
+        <button class="qty-btn" data-action="minus">−</button>
+        <input class="qty-input" id="qty-${item.id}" type="number" min="0" max="${item.max}" value="0" inputmode="numeric">
+        <button class="qty-btn" data-action="plus">＋</button>
+      </div>
+    </div>
+  `;
 
-el.querySelector('[data-action="minus"]').addEventListener('click', () => {
-  qty = Math.max(0, qty - 1);
-  state[item.id] = qty;
-  qtyEl.value = qty;
-  updateSummary();
-});
+  let qty = 0;
+  const qtyEl = el.querySelector(`#qty-${item.id}`);
 
-el.querySelector('[data-action="plus"]').addEventListener('click', () => {
-  qty = Math.min(item.max, qty + 1);
-  state[item.id] = qty;
-  qtyEl.value = qty;
-  updateSummary();
-});
+  el.querySelector('[data-action="minus"]').addEventListener('click', () => {
+    qty = Math.max(0, qty - 1);
+    state[item.id] = qty;
+    qtyEl.value = qty;
+    updateSummary();
+  });
 
-qtyEl.addEventListener('input', () => {
-  let value = parseInt(qtyEl.value, 10);
+  el.querySelector('[data-action="plus"]').addEventListener('click', () => {
+    qty = Math.min(item.max, qty + 1);
+    state[item.id] = qty;
+    qtyEl.value = qty;
+    updateSummary();
+  });
 
-  if (isNaN(value)) {
-    value = 0;
-  }
+  qtyEl.addEventListener('input', () => {
+    let value = parseInt(qtyEl.value, 10);
 
-  value = Math.max(0, Math.min(item.max, value));
-  qty = value;
-  state[item.id] = qty;
-  qtyEl.value = qty;
-  updateSummary();
-});
-      return el;
+    if (isNaN(value)) {
+      value = 0;
     }
+
+    value = Math.max(0, Math.min(item.max, value));
+    qty = value;
+    state[item.id] = qty;
+    qtyEl.value = qty;
+    updateSummary();
+  });
+
+  return el;
+}
 
     function createMemberItem(item){
       const el = document.createElement('div');
