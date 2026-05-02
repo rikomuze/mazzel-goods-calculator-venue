@@ -718,10 +718,25 @@ document.getElementById('imageBtn').addEventListener('click', async () => {
   link.href = canvas.toDataURL('image/png');
   link.click();
 });
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (!confirm('入力をすべてリセットしますか？')) return;
-      location.reload();
-    });
+   document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('入力をすべてリセットしますか？')) return;
+
+  items.forEach(item => {
+    if (item.type === 'members') {
+      item.members.forEach(member => {
+        state[item.id][member] = 0;
+        const input = document.getElementById(`qty-${item.id}-${member}`);
+        if (input) input.value = 0;
+      });
+    } else {
+      state[item.id] = 0;
+      const input = document.getElementById(`qty-${item.id}`);
+      if (input) input.value = 0;
+    }
+  });
+
+  updateSummary();
+});
 
     render();
   </script>
