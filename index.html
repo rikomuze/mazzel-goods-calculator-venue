@@ -511,19 +511,22 @@ function createSimpleItem(item){
 </div>
       `).join('');
 
-      el.innerHTML = `
-        <div class="item-head">
-          <div>
-            <h3 class="item-title">${item.name}</h3>
-            <div class="meta">メンバーごとに上限 ${item.maxPerMember}点</div>
-          </div>
-          <div class="price">${yen(item.price)}</div>
-        </div>
-        <div class="member-toolbar">
-          <button class="tiny-btn" id="fill-${item.id}">全種ほしい</button>
-        </div>
-        <div class="member-grid">${memberRows}</div>
-      `;
+    el.innerHTML = `
+  <img class="item-image" src="images/${item.id}.webp" onerror="this.onerror=null; this.src='images/${item.id}.png';" alt="${item.name}">
+  <div>
+    <div class="item-head">
+      <div>
+        <h3 class="item-title">${item.name}</h3>
+        <div class="meta">メンバーごとに上限 ${item.maxPerMember}点</div>
+      </div>
+      <div class="price">${yen(item.price)}</div>
+    </div>
+    <div class="member-toolbar">
+      <button class="tiny-btn" id="fill-${item.id}">全種ほしい</button>
+    </div>
+    <div class="member-grid">${memberRows}</div>
+  </div>
+`;
 
       state[item.id] = {};
       item.members.forEach(member => {
