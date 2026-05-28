@@ -84,14 +84,14 @@
       display: grid;
       gap: 10px;
     }
-    .item {
-      display: grid;
-      grid-template-columns: 76px minmax(0, 1fr) 90px 1fr;
-      gap: 14px;
-      align-items: start;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
+   .item {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
     .item:last-child { border-bottom: none; }
     .item-image {
       width: 76px;
@@ -102,13 +102,13 @@
       background: rgba(255,255,255,0.05);
     }
     .item-name-wrap { min-width: 0; }
-    .item-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
+   .item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
     .name {
       font-size: 15px;
       font-weight: 700;
@@ -118,12 +118,11 @@
       color: var(--muted);
     }
     .price {
-      font-size: 15px;
-      font-weight: 800;
-      text-align: right;
-      white-space: nowrap;
-      padding-top: 2px;
-    }
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  padding-top: 1px;
+}
     .note {
       display: inline-block;
       margin-top: 6px;
@@ -139,6 +138,7 @@
       gap: 8px;
       align-items: center;
       justify-content: flex-end;
+      grid-column: 2 / 3;
     }
     .controls button,
     .member-controls button,
@@ -602,12 +602,12 @@
         <div class="item">
           <img class="item-image" src="${imageSrc(item.id)}" onerror="imageFallback(this, '${item.id}')" alt="${item.name}">
           <div class="item-name-wrap">
-            <div class="item-head">
-              <div class="name">${item.name}</div>
-            </div>
-            <div class="note">${item.note}</div>
-          </div>
-          <div class="price">${formatYen(item.price)}</div>
+         <div class="item-head">
+  <div class="name">${item.name}</div>
+  <div class="price">${formatYen(item.price)}</div>
+</div>
+<div class="note">${item.note}</div>
+</div>
           ${item.members ? renderMemberSelector(item) : `
             <div class="controls">
               <button type="button" onclick="changeCount('${item.id}', -1, ${item.limit})">−</button>
