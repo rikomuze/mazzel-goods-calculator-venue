@@ -338,6 +338,61 @@
       font-size: 13px;
       color: var(--muted);
     }
+
+    .floating-total {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 32px rgba(18, 15, 29, 0.22);
+}
+
+.floating-total-text {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.floating-total-text span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.floating-total-text strong {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.floating-total button {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .floating-total {
+    display: flex;
+  }
+}
     @media (max-width: 1100px) {
       .layout { grid-template-columns: 1fr; }
       .item { grid-template-columns: 76px minmax(0, 1fr) 90px; }
@@ -418,13 +473,22 @@
 
         <div class="actions">
           <button id="copyBtn" type="button">結果をコピー</button>
-          <button id="downloadBtn" type="button">画像で保存</button>
-          <button id="resetBtn" type="button" class="secondary">リセット</button>
+          <button id="downloadBtn" type="button">画像を共有・保存</button>
+         <button id="resetBtn" type="button">リセット</button>
         </div>
 
         <p class="memo">メンバー別商品は、メンバーごとに数量を選ぶ仕様です。全種ほしいを押すと、各メンバーが1点ずつ入ります。</p>
       </aside>
     </div>
+  </div>
+
+    <div class="floating-total">
+    <div class="floating-total-text">
+      <span>合計</span>
+      <strong id="floatingTotalPrice">¥0</strong>
+      <span id="floatingTotalCount">0点</span>
+    </div>
+    <button type="button" id="floatingResultBtn">結果を見る</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -485,6 +549,9 @@ let currentCategory = 'すべて';
     const categoryTabs = document.getElementById('categoryTabs');
     const totalPrice = document.getElementById('totalPrice');
     const totalCount = document.getElementById('totalCount');
+    const floatingTotalPrice = document.getElementById('floatingTotalPrice');
+const floatingTotalCount = document.getElementById('floatingTotalCount');
+const floatingResultBtn = document.getElementById('floatingResultBtn');
     const breakdown = document.getElementById('breakdown');
     const warningBox = document.getElementById('warningBox');
     const copyBtn = document.getElementById('copyBtn');
@@ -687,6 +754,9 @@ goodsList.innerHTML = visibleGoods.map((item) => renderRow(item)).join('');
       totalPrice.textContent = formatYen(total);
       totalCount.textContent = count + '点';
 
+  floatingTotalPrice.textContent = formatYen(total);
+floatingTotalCount.textContent = count + '点';
+
       if (rows.length === 0) {
         breakdown.innerHTML = '<div class="row"><span>まだ商品が選択されていません</span><span>—</span></div>';
       } else {
@@ -734,30 +804,70 @@ goodsList.innerHTML = visibleGoods.map((item) => renderRow(item)).join('');
       }
     });
 
+    floatingResultBtn.addEventListener('click', function () {
+  document.querySelector('aside.panel').scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+});
     resetBtn.addEventListener('click', resetAll);
 
-    downloadBtn.addEventListener('click', async function () {
-      const target = document.querySelector('aside.panel');
+  downloadBtn.addEventListener('click', async function () {
+  const target = document.querySelector('aside.panel');
 
-      try {
-        const canvas = await html2canvas(target, {
-          backgroundColor: '#1a111b',
-          scale: 2
-        });
+  try {
+    downloadBtn.textContent = '画像を作成中...';
 
-        const link = document.createElement('a');
-        link.download = 'mazzel-goods-result-venue.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        downloadBtn.textContent = '保存しました';
-        setTimeout(function () {
-          downloadBtn.textContent = '画像で保存';
-        }, 1600);
-      } catch (e) {
-        alert('画像保存に失敗しました。');
-      }
+    const canvas = await html2canvas(target, {
+      backgroundColor: '#ffffff',
+      scale: 2
     });
+
+    canvas.toBlob(async function (blob) {
+      if (!blob) {
+        alert('画像の作成に失敗しました。');
+        downloadBtn.textContent = '画像で保存';
+        return;
+      }
+
+      const file = new File([blob], 'mazzel-goods-result-venue.png', {
+        type: 'image/png'
+      });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'MAZZEL グッズ購入費用メモ',
+            text: 'MAZZEL グッズ購入費用メモ'
+          });
+
+          downloadBtn.textContent = '共有しました';
+          setTimeout(function () {
+            downloadBtn.textContent = '画像で保存';
+          }, 1600);
+        } catch (shareError) {
+          downloadBtn.textContent = '画像で保存';
+        }
+      } else {
+       const imageUrl = URL.createObjectURL(blob);
+window.open(imageUrl, '_blank');
+
+downloadBtn.textContent = '画像を開きました';
+setTimeout(function () {
+  downloadBtn.textContent = '画像で保存';
+}, 1600);
+
+setTimeout(function () {
+  URL.revokeObjectURL(imageUrl);
+}, 60000);
+      }
+    }, 'image/png');
+  } catch (e) {
+    alert('画像保存に失敗しました。');
+    downloadBtn.textContent = '画像で保存';
+  }
+});
 
     window.changeCount = changeCount;
     window.inputCount = inputCount;
