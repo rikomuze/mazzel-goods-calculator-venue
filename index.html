@@ -80,6 +80,29 @@
       margin: 0 0 14px;
       font-size: 20px;
     }
+    .category-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.category-tabs button {
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.category-tabs button.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border-color: transparent;
+}
     .goods-list {
       display: grid;
       gap: 10px;
@@ -365,6 +388,7 @@
     <div class="layout">
       <section class="panel">
         <h2>商品一覧</h2>
+        <div id="categoryTabs" class="category-tabs"></div>
         <div id="goodsList" class="goods-list"></div>
       </section>
 
@@ -402,36 +426,39 @@
 
     const goods = [
       { id: 'light-band', name: 'MAZZEL OFFICIAL LIGHT BAND S+', price: 5500, limit: 3, note: '会場先行販売 / 上限3点' },
-      { id: 'stripe-shirt', name: 'ストライプシャツ', price: 12000, limit: 3, note: 'M / Lサイズ / 上限3点' },
-{ id: 'tie-necklace-black', name: 'ネクタイネックレス BLACK', price: 3800, limit: 3, note: '上限3点' },
-{ id: 'tie-necklace-purple', name: 'ネクタイネックレス PURPLE', price: 3500, limit: 3, note: '上限3点' },
-{ id: 'nano-bag', name: 'ナノバッグ', price: 6200, limit: 3, note: '上限3点' },
-{ id: 'squeeze-charm', name: 'スクイーズチャーム', price: 1800, limit: 3, note: '各メンバー3点まで / 全9種', members: strapMembers },,
+      { id: 'stripe-shirt', name: 'ストライプシャツ', price: 12000, limit: 3, note: 'M / Lサイズ / 上限3点', categories: ['代々木追加グッズ'] },
+{ id: 'tie-necklace-black', name: 'ネクタイネックレス BLACK', price: 3800, limit: 3, note: '上限3点', categories: ['代々木追加グッズ'] },
+{ id: 'tie-necklace-purple', name: 'ネクタイネックレス PURPLE', price: 3500, limit: 3, note: '上限3点', categories: ['代々木追加グッズ'] },
+{ id: 'nano-bag', name: 'ナノバッグ', price: 6200, limit: 3, note: '上限3点', categories: ['代々木追加グッズ'] },
+{ id: 'squeeze-charm', name: 'スクイーズチャーム', price: 1800, limit: 3, note: '各メンバー3点まで / 全9種', members: strapMembers, categories: ['代々木追加グッズ', 'メンバー別'] },
 
       { id: 'light-custom-band', name: 'MAZZEL OFFICIAL LIGHT CUSTOM BAND (PU)', price: 2000, limit: 3, note: '上限3点' },
-      { id: 'venue-charm', name: 'フルコーススタンドチャーム', price: 1300, limit: 3, note: '各会場限定販売 / 上限3点' },
-      { id: 'towel', name: ' タオル', price: 2500, limit: 3, note: '上限3点' },
+      { id: 'venue-charm', name: 'フルコーススタンドチャーム', price: 1300, limit: 3, note: '各会場限定販売 / 上限3点', categories: ['代々木追加グッズ'] },
+      { id: 'towel', name: 'タオル', price: 2500, limit: 3, note: '上限3点' },
       { id: 'rubber-band', name: 'ラバーバンド', price: 1000, limit: 3, note: '上限3点' },
-      { id: 'big-tote', name: ' BIGトートバッグ', price: 5800, limit: 3, note: '上限3点' },
-      { id: 'tee-black', name: ' Tシャツ BLACK', price: 5000, limit: 3, note: '上限3点' },
-      { id: 'tee-white', name: ' Tシャツ WHITE', price: 5000, limit: 3, note: 'FC会員限定カラー / 上限3点' },
+      { id: 'big-tote', name: 'BIGトートバッグ', price: 5800, limit: 3, note: '上限3点' },
+      { id: 'tee-black', name: 'Tシャツ BLACK', price: 5000, limit: 3, note: '上限3点' },
+      { id: 'tee-white', name: 'Tシャツ WHITE', price: 5000, limit: 3, note: 'FC会員限定カラー / 上限3点' },
       { id: 'acsta-trolley', name: 'アクスタトロッコ', price: 3600, limit: 3, note: '上限3点' },
-      { id: 'clear-custom-seal', name: ' クリアカスタムシール', price: 600, limit: 3, note: '上限3点' },
-      { id: 'random-photo', name: 'ランダムフォトカード・ステッカーセット', price: 500, limit: 10, note: 'ランダム / 上限10点' },
+      { id: 'clear-custom-seal', name: 'クリアカスタムシール', price: 600, limit: 3, note: '上限3点' },
+      { id: 'random-photo', name: 'ランダムフォトカード・ステッカーセット', price: 500, limit: 10, note: 'ランダム / 上限10点' , categories: ['ランダム']},
       { id: 'photocard-case', name: 'フォトカードケース', price: 2000, limit: 3, note: '上限3点' },
-      { id: 'random-art-charm', name: 'ランダムアートチャーム', price: 700, limit: 10, note: 'ランダム / 上限10点' },
-      { id: 'soccer-shirt', name: 'Produced by KAIRYU  MAZZELサッカーシャツ', price: 5200, limit: 3, note: '上限3点' },
-      { id: 'shushu', name: 'Produced by NAOYA くちびるとシュシュ', price: 2500, limit: 3, note: '上限3点' },
-      { id: 'candle', name: 'Produced by RAN  ふつうのきゃんどる', price: 5000, limit: 3, note: '上限3点' },
-      { id: 'nabe-hand', name: 'Produced by SEITO  ごっついなべハンド', price: 3500, limit: 3, note: '上限3点' },
-      { id: 'fight-mirror', name: 'Produced by RYUKI  Fight Mirror', price: 1500, limit: 5, note: '上限5点' },
-      { id: 'coaster', name: 'まぜたくコースター', price: 3500, limit: 3, note: '4種セット / 上限3点' },
-      { id: 'tomcorn', name: 'Produced by HAYATO TOMCORNぬいぐるみチャーム', price: 2500, limit: 3, note: '上限3点' },
-      { id: 'einyanko', name: 'Produced by EIKI  えいにゃんこチャーム', price: 2500, limit: 3, note: '上限3点' },
-      { id: 'multi-strap', name: ' マルチストラップ', price: 2500, limit: 3, note: '各メンバー3点まで / 全9種', members: strapMembers },
-      { id: 'acrylic-stand', name: ' アクリルスタンド', price: 1300, limit: 3, note: '各メンバー3点まで / 全8種', members: standMembers },
-      { id: 'big-acrylic-stand', name: ' でっかアクリルスタンド MAZZEL', price: 4000, limit: 3, note: '上限3点' }
+      { id: 'random-art-charm', name: 'ランダムアートチャーム', price: 700, limit: 10, note: 'ランダム / 上限10点', categories: ['ランダム'] },
+     { id: 'soccer-shirt', name: 'KAIRYU / MAZZELサッカーシャツ', price: 5200, limit: 3, note: '上限3点', categories: ['メンプロ'] },
+{ id: 'shushu', name: 'NAOYA / くちびるとシュシュ', price: 2500, limit: 3, note: '上限3点', categories: ['メンプロ'] },
+{ id: 'candle', name: 'RAN / ふつうのきゃんどる', price: 5000, limit: 3, note: '上限3点', categories: ['メンプロ'] },
+{ id: 'nabe-hand', name: 'SEITO / ごっついなべハンド', price: 3500, limit: 3, note: '上限3点', categories: ['メンプロ'] },
+{ id: 'fight-mirror', name: 'RYUKI / Fight Mirror', price: 1500, limit: 5, note: '上限5点', categories: ['メンプロ'] },
+{ id: 'coaster', name: 'TAKUTO / まぜたくコースター', price: 3500, limit: 3, note: '4種セット / 上限3点', categories: ['メンプロ'] },
+{ id: 'tomcorn', name: 'HAYATO / TOMCORNぬいぐるみチャーム', price: 2500, limit: 3, note: '上限3点', categories: ['メンプロ'] },
+{ id: 'einyanko', name: 'EIKI / えいにゃんこチャーム', price: 2500, limit: 3, note: '上限3点', categories: ['メンプロ'] },
+      { id: 'multi-strap', name: 'マルチストラップ', price: 2500, limit: 3, note: '各メンバー3点まで / 全9種', members: strapMembers, categories: ['メンバー別'] },
+      { id: 'acrylic-stand', name: 'アクリルスタンド', price: 1300, limit: 3, note: '各メンバー3点まで / 全8種', members: standMembers, categories: ['メンバー別'] },
+      { id: 'big-acrylic-stand', name: 'でっかアクリルスタンド MAZZEL', price: 4000, limit: 3, note: '上限3点' }
     ];
+
+    const categories = ['すべて', '代々木追加グッズ', 'メンプロ', 'ランダム', 'メンバー別'];
+let currentCategory = 'すべて';
 
     const quantities = {};
     const memberQuantities = {};
@@ -447,6 +474,7 @@
     });
 
     const goodsList = document.getElementById('goodsList');
+    const categoryTabs = document.getElementById('categoryTabs');
     const totalPrice = document.getElementById('totalPrice');
     const totalCount = document.getElementById('totalCount');
     const breakdown = document.getElementById('breakdown');
@@ -596,6 +624,22 @@
       `;
     }
 
+    function renderCategoryTabs() {
+  categoryTabs.innerHTML = categories.map((category) => `
+    <button
+      type="button"
+      class="${currentCategory === category ? 'active' : ''}"
+      onclick="changeCategory('${category}')"
+    >
+      ${category}
+    </button>
+  `).join('');
+}
+
+function changeCategory(category) {
+  currentCategory = category;
+  update();
+}
     function renderRow(item) {
       const count = quantities[item.id];
       return `
@@ -619,8 +663,14 @@
       `;
     }
 
-    function update() {
-      goodsList.innerHTML = goods.map((item) => renderRow(item)).join('');
+function update() {
+  renderCategoryTabs();
+
+const visibleGoods = currentCategory === 'すべて'
+  ? goods
+  : goods.filter((item) => item.categories && item.categories.includes(currentCategory));
+
+goodsList.innerHTML = visibleGoods.map((item) => renderRow(item)).join('');
 
       const rows = getRows();
       const total = rows.reduce((sum, row) => sum + row.subtotal, 0);
@@ -706,6 +756,7 @@
     window.changeMemberCount = changeMemberCount;
     window.selectAllMembers = selectAllMembers;
     window.clearMembers = clearMembers;
+    window.changeCategory = changeCategory;
     window.imageFallback = imageFallback;
 
     update();
